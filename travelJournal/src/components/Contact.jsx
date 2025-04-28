@@ -16,7 +16,7 @@
 // }
 
 // Contact.jsx
-export default function Contact({
+export default function Contact({ // can also pass props only and spread the data in app.jsx
     avatarSrc,
     name,
     phone,
@@ -24,9 +24,9 @@ export default function Contact({
     phoneIconSrc,
     emailIconSrc,
   }) {
-    return (
+    return ( // then refers the data as props.avatarSrc, props.phoneIconSrc etc..
       <article className="contact-card">
-        <img src={avatarSrc} alt={`${name} avatar`} />
+        <img src={avatarSrc} alt={`${name} avatar`} /> 
         <h3>{name}</h3>
   
         <div className="info-group">
