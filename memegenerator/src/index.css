@@ -13,15 +13,15 @@ main {
   max-width: 600px;
 }
 
-header {
+.header {
   display: flex;
-  margin-right: 20px;
   align-items: center;
-  text-align: center;
+  justify-content: center;
   height: 65px;
   background: linear-gradient(90deg, #672280 1.18%, #A626D3 100%);
   color: white;
-  padding: 20px;
+  padding: 10px;
+  gap: 5px;
 }
 
 .header > img {
@@ -31,7 +31,6 @@ header {
 
 .header > h1 {
   font-size: 1.25rem;
-  margin-right: auto;
 }
 
 .form {
