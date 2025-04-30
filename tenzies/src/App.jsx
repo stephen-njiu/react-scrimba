@@ -25,7 +25,7 @@ function App(){
   function generateAllNewDice () {
     return new Array(10).fill(0)
     .map(() => ({
-      value: Math.floor(Math.random() * 10),
+      value: Math.ceil(Math.random() * 6),
       isHeld: false,
       id: nanoid()
       }))    
@@ -35,7 +35,7 @@ function App(){
     if (!gameWon){
       setDice(oldDice => oldDice.map(die =>
           die.isHeld? die :
-          {...die, value: Math.floor(Math.random() * 10)}
+          {...die, value: Math.ceil(Math.random() * 6)}
         ))
       } else{
         setDice(generateAllNewDice())
