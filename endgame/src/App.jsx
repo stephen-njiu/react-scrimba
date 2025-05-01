@@ -1,6 +1,6 @@
 import React from "react";
 import languages from "./language";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import clsx from 'clsx'
 import { getFarewellText } from "./utils";
 import Confetti from 'react-confetti'
@@ -16,6 +16,12 @@ const randomWord = words[Math.floor(Math.random() * words.length)]
 // state values
   const [letter, setLetter] = useState(randomWord)
   const [guessedLetter, setGuessedLetters] = useState([]) 
+  const [isTimeUp, setIsTimeUp] = useState(false)
+  const newGameBtnRef = useRef(null)
+
+const farewellRef = useRef(null);
+const lastWrongGuessCountRef = useRef(0);
+
 
 // static values
   const alphabet = "abcdefghijklmnopqrstuvwxyz"
@@ -25,7 +31,11 @@ const randomWord = words[Math.floor(Math.random() * words.length)]
 
   const isGameWon = letter.split("").every(l => guessedLetter.includes(l))
   const isGameLost = wrongGuessCount >= languages.length -1
-  const isGameOver = isGameWon || isGameLost
+  const isGameOver = isGameWon || isGameLost || isTimeUp
+
+  const remainingAttempts = (languages.length - 1) - wrongGuessCount;
+  const [timeLeft, setTimeLeft] = useState(30)
+
 
 
   function addGuessedLetter(letter) {
@@ -49,11 +59,17 @@ const randomWord = words[Math.floor(Math.random() * words.length)]
     )
   })
 
-  const eachLetter = letter.split("").map((l, index) => (
-    <span key={index}>
-      {guessedLetter.includes(l)?l.toUpperCase():''}
+  const eachLetter = letter.split("").map((l, index) => {
+    const wasGuessed = guessedLetter.includes(l);
+    const letterClass = isGameOver ? (wasGuessed ? 'correct' : 'wrong') : '';
+  
+    return (
+      <span key={index} className={letterClass}>
+        {(isGameOver || wasGuessed) ? l.toUpperCase() : ''}
       </span>
-  ))
+    );
+  });
+  
 
   const alphaElements = alphabet.split("").map((a, index) => {
     const isGuessed = guessedLetter.includes(a)
@@ -65,12 +81,14 @@ const randomWord = words[Math.floor(Math.random() * words.length)]
       wrong:isWrong
     })
     return (
-    <button className={className} key={index} onClick={() => addGuessedLetter(a)}>{a.toUpperCase()}</button>
+    <button className={className} key={index} onClick={
+      () => addGuessedLetter(a)}>{a.toUpperCase()}</button>
   )})
 
 const gameStatusClass = clsx("game-status", {
   won:isGameWon,
-  lost:isGameLost
+  lost:isGameLost,
+  timeup:isTimeUp
 })
 
 // add keyboard press for the users instead of using just the mouse
@@ -89,8 +107,26 @@ useEffect(() => {
   }
 },[guessedLetter])
 
-function renderText(){
-  if (isGameOver){
+useEffect(() => {
+  if (isGameOver && newGameBtnRef.current){
+    newGameBtnRef.current.focus()
+  }
+},[isGameOver])
+
+useEffect(() => {
+  if (
+    wrongGuessCount > 0 &&
+    wrongGuessCount !== lastWrongGuessCountRef.current
+  ) {
+    farewellRef.current = getFarewellText(languages[wrongGuessCount - 1].name);
+    lastWrongGuessCountRef.current = wrongGuessCount;
+  }
+}, [wrongGuessCount]);
+
+
+
+function renderText() {
+  if (isGameOver) {
     if (isGameWon) {
       return (
         <>
@@ -98,26 +134,64 @@ function renderText(){
           <p>Well Done!</p>
         </>
       )
+    } else if (isTimeUp) {
+      return (
+        <>
+          <h2>Time's Up!</h2>
+          <p>You took too long. Assembly wins this round ⏱️</p>
+        </>
+      )
     } else {
       return (
         <>
-        <h2>Game Over!</h2>
-        <p>You Lose! Better start learning Assembly 🤣</p>
-        <p className="correct-word">The word was: <strong>{letter.toUpperCase()}</strong></p>
-      </>
+          <h2>Game Over!</h2>
+          <p>You Lose! Better start learning Assembly 🤣</p>
+        </>
       )
     }
   } else {
     return (
-      guessedLetter.length > 0 && wrongGuessCount > 0  &&
+      guessedLetter.length > 0 && 
+      wrongGuessCount > 0  &&
+      farewellRef.current &&
       <p className="farewell">
-        
-        {getFarewellText()}
+        {farewellRef.current}
       </p>
     )
   }
 }
+
+
+
+
+  function startGame(){
+    const newWord = words[Math.floor(Math.random() * words.length)];
+    setGuessedLetters([]);
+    setLetter(newWord);
+    setTimeLeft(30);
+    setIsTimeUp(false)
+  }
   
+  useEffect(() => {
+    if (isGameOver) return;
+  
+    const timer = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          setIsTimeUp(true);  // Set game over due to time
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  
+    return () => clearInterval(timer);
+  }, [letter]);
+  
+
+
+
   return (  
     <main>
       {isGameWon && <Confetti 
@@ -128,7 +202,7 @@ function renderText(){
       />}
       <header>
         <h1>Assembly: Endgame</h1>
-        <p>Guess the word within 8 attempts to keep the programming world safe from Assembly</p>
+        <p>Guess the word within {languages.length -1} attempts to keep the programming world safe from Assembly</p>
       </header>
 
       <section className={gameStatusClass}>
@@ -145,8 +219,15 @@ function renderText(){
         {alphaElements}
       </section>
       <section className="endgame">
-        {isGameOver && <button>New Game</button>}
+        {isGameOver && <button onClick={startGame} ref={newGameBtnRef}>New Game</button>}
       </section>
+      {!isGameOver && (
+  <section className="status-bar">
+    <p className="time-left">Time Left: {timeLeft}s</p>
+    <p className="attempts">Remaining Attempts: {remainingAttempts}</p>
+  </section>
+)}
+
     </main>
   )
 }

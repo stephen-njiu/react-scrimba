@@ -49,6 +49,11 @@ section.game-status.won {
 section.game-status.lost {
   padding-bottom: 0.3rem;
   background-color: #492525;
+} 
+
+section.game-status.timeup {
+  padding-bottom: 0.3rem;
+  background-color: #492525;
 }
 
 section.game-status > p {
@@ -58,7 +63,7 @@ section.game-status > p {
 section.game-status > p.farewell {
   width: 100%;
   padding: 0.3rem;
-  background-color: #e042c6;
+  background-color: #6e4c1e;
   border: 1px dashed #323232;
   font-style: italic;
   font-weight: 400;
@@ -115,11 +120,23 @@ section.word{
 }
 
 section.word > span {
-  width: 35px;
+  width: 30px;
   height: 30px;
   background-color: #5c5555;
   padding: 0.325rem 0.5rem;
   border-bottom: solid 1px blanchedalmond;
+}
+
+span.correct {
+  color: #05f80d;
+  font-size: large;
+  font-weight: bold;
+}
+
+span.wrong {
+  color: #f52308;
+  font-size: large;
+  font-weight: bold;
 }
 
 section.all-buttons{
@@ -150,6 +167,7 @@ section.all-buttons > button.wrong {
   background-color: #eb4b35;
 }
 
+
 section.endgame{
   display: flex;
   align-items: center;
@@ -165,6 +183,54 @@ section.endgame > button {
   border: none;
 }
 
+.status-bar {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: rgba(0, 0, 0, 0.85);
+  color: white;
+  padding: 15px 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: 'Arial', sans-serif;
+  text-align: center;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  z-index: 100;
+}
 
+.status-bar p {
+  margin: 5px 0;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
 
+.status-bar:hover {
+  transform: scale(1.05);
+  opacity: 0.9;
+}
 
+.status-bar:before {
+  content: '⏱️';
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+.status-bar .attempts {
+  color: #ff6347;
+}
+
+.status-bar .time-left {
+  color: #1e90ff;
+}
+
+/* 🔄 Mobile override: place in bottom-right on small screens */
+@media (max-width: 768px) {
+  .status-bar {
+    top: auto;
+    bottom: 20px;
+    right: 20px;
+  }
+}
