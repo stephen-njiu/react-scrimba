@@ -216,9 +216,9 @@ section.endgame > button {
 /* 🔄 Mobile: bottom center, smaller size */
 @media (max-width: 768px) {
   .status-bar {
-    top: auto;
+    top: 90%;
     font-size: small;
-    bottom: 10px;
+    bottom: 5px;
     right: 50%;
     transform: translateX(50%);
     padding: 8px 12px;
