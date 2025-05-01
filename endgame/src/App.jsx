@@ -34,7 +34,7 @@ const lastWrongGuessCountRef = useRef(0);
   const isGameOver = isGameWon || isGameLost || isTimeUp
 
   const remainingAttempts = (languages.length - 1) - wrongGuessCount;
-  const [timeLeft, setTimeLeft] = useState(30)
+  const [timeLeft, setTimeLeft] = useState(60)
 
 
 
@@ -168,7 +168,7 @@ function renderText() {
     const newWord = words[Math.floor(Math.random() * words.length)];
     setGuessedLetters([]);
     setLetter(newWord);
-    setTimeLeft(30);
+    setTimeLeft(60);
     setIsTimeUp(false)
   }
   
