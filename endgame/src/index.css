@@ -42,8 +42,28 @@ section.game-status {
   margin-block: 30px;
 }
 
+section.game-status.won {
+  padding-bottom: 0.3rem;
+}
+
+section.game-status.lost {
+  padding-bottom: 0.3rem;
+  background-color: #492525;
+}
+
 section.game-status > p {
   margin: 0;
+}
+
+section.game-status > p.farewell {
+  width: 100%;
+  padding: 0.3rem;
+  background-color: #e042c6;
+  border: 1px dashed #323232;
+  font-style: italic;
+  font-weight: 400;
+  text-align: center;
+  font-size: large;
 }
 
 section.game-status > h2 {

@@ -1,12 +1,21 @@
 import React from "react";
 import languages from "./language";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import clsx from 'clsx'
+import { getFarewellText } from "./utils";
+import Confetti from 'react-confetti'
+import words from "./words";
+
 
 export default function App(){
+// costants
+const width = window.innerWidth
+const height = window.innerHeight
+//
+const randomWord = words[Math.floor(Math.random() * words.length)]
 // state values
-  const [letter, setLetter] = useState("react")
-  const [guessedLetter, setGuessedLetters] = useState([])
+  const [letter, setLetter] = useState(randomWord)
+  const [guessedLetter, setGuessedLetters] = useState([]) 
 
 // static values
   const alphabet = "abcdefghijklmnopqrstuvwxyz"
@@ -19,10 +28,8 @@ export default function App(){
   const isGameOver = isGameWon || isGameLost
 
 
-
-
-
   function addGuessedLetter(letter) {
+    if(isGameOver) return; // prevent further input if the game is over
     setGuessedLetters(prevLetters => prevLetters.includes(letter)? prevLetters : [...prevLetters, letter])
   }
 
@@ -66,31 +73,68 @@ const gameStatusClass = clsx("game-status", {
   lost:isGameLost
 })
 
+// add keyboard press for the users instead of using just the mouse
+
+useEffect(() => {
+  function handleKeyPress(e){
+    const key = e.key.toLowerCase()
+    if(alphabet.includes(key)){
+      addGuessedLetter(key)
+    }
+  }
+
+  window.addEventListener("keydown", handleKeyPress)
+  return () => {
+    window.removeEventListener("keydown",handleKeyPress)
+  }
+},[guessedLetter])
+
+function renderText(){
+  if (isGameOver){
+    if (isGameWon) {
+      return (
+        <>
+          <h2>You Win!</h2>
+          <p>Well Done!</p>
+        </>
+      )
+    } else {
+      return (
+        <>
+        <h2>Game Over!</h2>
+        <p>You Lose! Better start learning Assembly 🤣</p>
+        <p className="correct-word">The word was: <strong>{letter.toUpperCase()}</strong></p>
+      </>
+      )
+    }
+  } else {
+    return (
+      guessedLetter.length > 0 && wrongGuessCount > 0  &&
+      <p className="farewell">
+        
+        {getFarewellText()}
+      </p>
+    )
+  }
+}
   
   return (  
     <main>
+      {isGameWon && <Confetti 
+        width={width}
+        height={height}
+        gravity={0.25}
+        numberOfPieces={200}
+      />}
       <header>
         <h1>Assembly: Endgame</h1>
         <p>Guess the word within 8 attempts to keep the programming world safe from Assembly</p>
       </header>
+
       <section className={gameStatusClass}>
-
-      {isGameOver ? (
-        isGameWon ? (
-          <>
-            <h2>You win!</h2>
-            <p>Well done!</p>
-          </>
-        ) : (
-        <>
-          <h2>Game Over!</h2>
-          <p>You Lose! Better start learning Assembly 🤣</p>
-        </>
-        )
-      ) : (null)}
-
-
+        {renderText()}
       </section>
+
       <section className="language-chips">
         {languageElements}
       </section>
