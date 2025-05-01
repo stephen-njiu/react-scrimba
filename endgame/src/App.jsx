@@ -4,15 +4,23 @@ import { useState } from "react";
 import clsx from 'clsx'
 
 export default function App(){
-
+// state values
   const [letter, setLetter] = useState("react")
   const [guessedLetter, setGuessedLetters] = useState([])
 
-
+// static values
   const alphabet = "abcdefghijklmnopqrstuvwxyz"
 
-
+// Derived values
   const wrongGuessCount = guessedLetter.filter(lt => !letter.includes(lt)).length
+
+  const isGameWon = letter.split("").every(l => guessedLetter.includes(l))
+  const isGameLost = wrongGuessCount >= languages.length -1
+  const isGameOver = isGameWon || isGameLost
+
+
+
+
 
   function addGuessedLetter(letter) {
     setGuessedLetters(prevLetters => prevLetters.includes(letter)? prevLetters : [...prevLetters, letter])
@@ -53,7 +61,10 @@ export default function App(){
     <button className={className} key={index} onClick={() => addGuessedLetter(a)}>{a.toUpperCase()}</button>
   )})
 
-
+const gameStatusClass = clsx("game-status", {
+  won:isGameWon,
+  lost:isGameLost
+})
 
   
   return (  
@@ -62,9 +73,23 @@ export default function App(){
         <h1>Assembly: Endgame</h1>
         <p>Guess the word within 8 attempts to keep the programming world safe from Assembly</p>
       </header>
-      <section className="game-status">
-        <h2>You win!</h2>
-        <p>Well done!</p>
+      <section className={gameStatusClass}>
+
+      {isGameOver ? (
+        isGameWon ? (
+          <>
+            <h2>You win!</h2>
+            <p>Well done!</p>
+          </>
+        ) : (
+        <>
+          <h2>Game Over!</h2>
+          <p>You Lose! Better start learning Assembly 🤣</p>
+        </>
+        )
+      ) : (null)}
+
+
       </section>
       <section className="language-chips">
         {languageElements}
@@ -76,7 +101,7 @@ export default function App(){
         {alphaElements}
       </section>
       <section className="endgame">
-        <button>End Game</button>
+        {isGameOver && <button>New Game</button>}
       </section>
     </main>
   )
